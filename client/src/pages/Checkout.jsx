@@ -1,26 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Checkout() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [payment, setPayment] =
     useState("Cash on Delivery");
+
+  const [cart, setCart] = useState([]);
+  const [loadingCart, setLoadingCart] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/cart"
+        );
+
+        setCart(response.data.cart);
+      } catch (error) {
+        console.error(
+          "Checkout cart loading error:",
+          error
+        );
+
+        alert(
+          "Unable to load your cart."
+        );
+      } finally {
+        setLoadingCart(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!name || !phone || !address) {
-      alert("Please fill all delivery details.");
+      alert(
+        "Please fill all delivery details."
+      );
       return;
     }
-
-    const cart =
-      JSON.parse(
-        localStorage.getItem("campusCart")
-      ) || [];
 
     if (cart.length === 0) {
       alert("Your cart is empty.");
@@ -28,7 +56,10 @@ function Checkout() {
     }
 
     const total = cart.reduce(
-      (sum, product) => sum + product.price,
+      (sum, product) =>
+        sum +
+        product.price *
+          (product.quantity || 1),
       0
     );
 
@@ -53,16 +84,28 @@ function Checkout() {
         }
       );
 
-      alert(response.data.message);
+      await axios.delete(
+        "http://localhost:5000/api/cart"
+      );
 
-      localStorage.removeItem("campusCart");
+      localStorage.removeItem(
+        "campusCart"
+      );
+
+      alert(response.data.message);
 
       setName("");
       setPhone("");
       setAddress("");
       setPayment("Cash on Delivery");
+      setCart([]);
+
+      navigate("/orders");
     } catch (error) {
-      console.error("Order error:", error);
+      console.error(
+        "Order error:",
+        error
+      );
 
       alert(
         error.response?.data?.message ||
@@ -73,15 +116,31 @@ function Checkout() {
     }
   };
 
+  if (loadingCart) {
+    return (
+      <div className="loading">
+        Loading checkout...
+      </div>
+    );
+  }
+
   return (
     <div className="form-page">
       <form
         className="auth-form checkout-form"
         onSubmit={handleSubmit}
       >
-        <p className="section-tag">CHECKOUT</p>
+        <p className="section-tag">
+          CHECKOUT
+        </p>
 
         <h1>Place Your Order</h1>
+
+        <p>
+          {cart.length} product
+          {cart.length !== 1 ? "s" : ""} in
+          your cart
+        </p>
 
         <label>Full Name</label>
 
@@ -123,8 +182,12 @@ function Checkout() {
             setPayment(event.target.value)
           }
         >
-          <option>Cash on Delivery</option>
+          <option>
+            Cash on Delivery
+          </option>
+
           <option>UPI</option>
+
           <option>Card</option>
         </select>
 

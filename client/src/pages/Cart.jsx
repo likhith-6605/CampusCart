@@ -1,37 +1,99 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Cart() {
-  const [cart, setCart] = useState(() => {
-    return (
-      JSON.parse(
-        localStorage.getItem("campusCart")
-      ) || []
-    );
-  });
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const removeItem = (index) => {
-    const updatedCart = cart.filter(
-      (_, itemIndex) => itemIndex !== index
-    );
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/cart"
+      );
 
-    setCart(updatedCart);
+      setCart(response.data.cart);
 
-    localStorage.setItem(
-      "campusCart",
-      JSON.stringify(updatedCart)
-    );
+      localStorage.setItem(
+        "campusCart",
+        JSON.stringify(response.data.cart)
+      );
+    } catch (error) {
+      console.error("Cart loading error:", error);
+
+      alert(
+        "Unable to load cart from the server."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const clearCart = () => {
-    setCart([]);
-    localStorage.removeItem("campusCart");
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const removeItem = async (productId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/cart/${productId}`
+      );
+
+      setCart(response.data.cart);
+
+      localStorage.setItem(
+        "campusCart",
+        JSON.stringify(response.data.cart)
+      );
+    } catch (error) {
+      console.error("Remove cart item error:", error);
+
+      alert(
+        error.response?.data?.message ||
+          "Unable to remove product."
+      );
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      const response = await axios.delete(
+        "http://localhost:5000/api/cart"
+      );
+
+      setCart(response.data.cart);
+
+      localStorage.removeItem("campusCart");
+    } catch (error) {
+      console.error("Clear cart error:", error);
+
+      alert(
+        error.response?.data?.message ||
+          "Unable to clear cart."
+      );
+    }
   };
 
   const total = cart.reduce(
-    (sum, product) => sum + product.price,
+    (sum, product) =>
+      sum +
+      product.price * (product.quantity || 1),
     0
   );
+
+  const itemCount = cart.reduce(
+    (sum, product) =>
+      sum + (product.quantity || 1),
+    0
+  );
+
+  if (loading) {
+    return (
+      <div className="loading">
+        Loading cart...
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -61,10 +123,10 @@ function Cart() {
       ) : (
         <div className="cart-layout">
           <div className="cart-items">
-            {cart.map((product, index) => (
+            {cart.map((product) => (
               <div
                 className="cart-item"
-                key={`${product.id}-${index}`}
+                key={product.id}
               >
                 <img
                   src={product.image}
@@ -76,14 +138,23 @@ function Cart() {
 
                   <p>{product.category}</p>
 
+                  <p>
+                    Quantity:{" "}
+                    {product.quantity || 1}
+                  </p>
+
                   <strong>
-                    ₹{product.price}
+                    ₹
+                    {product.price *
+                      (product.quantity || 1)}
                   </strong>
                 </div>
 
                 <button
                   className="remove-button"
-                  onClick={() => removeItem(index)}
+                  onClick={() =>
+                    removeItem(product.id)
+                  }
                 >
                   Remove
                 </button>
@@ -103,11 +174,13 @@ function Cart() {
 
             <div className="summary-row">
               <span>Items</span>
-              <span>{cart.length}</span>
+
+              <span>{itemCount}</span>
             </div>
 
             <div className="summary-row total-row">
               <span>Total</span>
+
               <strong>₹{total}</strong>
             </div>
 

@@ -92,6 +92,12 @@ const users = [];
 const orders = [];
 
 /* =========================
+   TEMPORARY CART
+========================= */
+
+const cart = [];
+
+/* =========================
    HOME API
 ========================= */
 
@@ -138,6 +144,135 @@ app.get("/api/products/:id", (req, res) => {
   res.json({
     success: true,
     product: product,
+  });
+});
+
+/* =========================
+   CART APIs
+========================= */
+
+/* GET CART */
+
+app.get("/api/cart", (req, res) => {
+  res.json({
+    success: true,
+    message: "Cart fetched successfully.",
+    cart: cart,
+  });
+});
+
+/* ADD PRODUCT TO CART */
+
+app.post("/api/cart", (req, res) => {
+  try {
+    const { productId } = req.body;
+
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: "Product ID is required.",
+      });
+    }
+
+    const product = products.find(
+      (item) => item.id === Number(productId)
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
+    const existingItem = cart.find(
+      (item) => item.id === product.id
+    );
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({
+        ...product,
+        quantity: 1,
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: `${product.name} added to cart.`,
+      cart: cart,
+    });
+  } catch (error) {
+    console.error("Add cart error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while adding product to cart.",
+    });
+  }
+});
+
+/* REMOVE PRODUCT FROM CART */
+
+app.delete("/api/cart/:id", (req, res) => {
+  const productId = Number(req.params.id);
+
+  const itemIndex = cart.findIndex(
+    (item) => item.id === productId
+  );
+
+  if (itemIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: "Product not found in cart.",
+    });
+  }
+
+  const removedItem = cart[itemIndex];
+
+  cart.splice(itemIndex, 1);
+
+  res.json({
+    success: true,
+    message: `${removedItem.name} removed from cart.`,
+    cart: cart,
+  });
+});
+
+/* CLEAR CART */
+
+app.delete("/api/cart", (req, res) => {
+  cart.length = 0;
+
+  res.json({
+    success: true,
+    message: "Cart cleared successfully.",
+    cart: cart,
+  });
+});
+
+/* =========================
+   REGISTER API TEST
+========================= */
+
+app.get("/api/users/register", (req, res) => {
+  res.json({
+    success: true,
+    message:
+      "Registration API is working. Use POST to register a user.",
+  });
+});
+
+/* =========================
+   LOGIN API TEST
+========================= */
+
+app.get("/api/users/login", (req, res) => {
+  res.json({
+    success: true,
+    message:
+      "Login API is working. Use POST to login.",
   });
 });
 

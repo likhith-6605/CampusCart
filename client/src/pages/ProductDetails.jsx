@@ -8,6 +8,7 @@ function ProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     axios
@@ -17,28 +18,38 @@ function ProductDetails() {
         setLoading(false);
       })
       .catch((error) => {
-        console.error(
-          "Error loading product:",
-          error
-        );
+        console.error("Error loading product:", error);
         setLoading(false);
       });
   }, [id]);
 
-  const addToCart = () => {
-    const existingCart =
-      JSON.parse(
-        localStorage.getItem("campusCart")
-      ) || [];
+  const addToCart = async () => {
+    try {
+      setAdding(true);
 
-    existingCart.push(product);
+      const response = await axios.post(
+        "http://localhost:5000/api/cart",
+        {
+          productId: product.id,
+        }
+      );
 
-    localStorage.setItem(
-      "campusCart",
-      JSON.stringify(existingCart)
-    );
+      localStorage.setItem(
+        "campusCart",
+        JSON.stringify(response.data.cart)
+      );
 
-    alert(`${product.name} added to cart!`);
+      alert(`${product.name} added to cart!`);
+    } catch (error) {
+      console.error("Add to cart error:", error);
+
+      alert(
+        error.response?.data?.message ||
+          "Unable to add product to cart."
+      );
+    } finally {
+      setAdding(false);
+    }
   };
 
   if (loading) {
@@ -108,8 +119,11 @@ function ProductDetails() {
             <button
               className="add-button"
               onClick={addToCart}
+              disabled={adding}
             >
-              🛒 Add to Cart
+              {adding
+                ? "Adding..."
+                : "🛒 Add to Cart"}
             </button>
 
             <button

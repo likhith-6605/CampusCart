@@ -1,18 +1,30 @@
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 function ProductCard({ product }) {
-  const addToCart = () => {
-    const existingCart =
-      JSON.parse(localStorage.getItem("campusCart")) || [];
+  const addToCart = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/cart",
+        {
+          productId: product.id,
+        }
+      );
 
-    existingCart.push(product);
+      localStorage.setItem(
+        "campusCart",
+        JSON.stringify(response.data.cart)
+      );
 
-    localStorage.setItem(
-      "campusCart",
-      JSON.stringify(existingCart)
-    );
+      alert(`${product.name} added to cart!`);
+    } catch (error) {
+      console.error("Add to cart error:", error);
 
-    alert(`${product.name} added to cart!`);
+      alert(
+        error.response?.data?.message ||
+          "Unable to add product to cart."
+      );
+    }
   };
 
   const addToWishlist = () => {

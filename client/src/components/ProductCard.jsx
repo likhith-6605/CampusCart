@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function ProductCard({ product }) {
   const addToCart = () => {
     const existingCart =
@@ -15,9 +17,7 @@ function ProductCard({ product }) {
 
   const addToWishlist = () => {
     const existingWishlist =
-      JSON.parse(
-        localStorage.getItem("campusWishlist")
-      ) || [];
+      JSON.parse(localStorage.getItem("campusWishlist")) || [];
 
     const alreadyExists = existingWishlist.some(
       (item) => item.id === product.id
@@ -76,6 +76,13 @@ function ProductCard({ product }) {
             </button>
           </div>
         </div>
+
+        <Link
+          to={`/product/${product.id}`}
+          className="view-details-button"
+        >
+          View Details →
+        </Link>
       </div>
     </div>
   );

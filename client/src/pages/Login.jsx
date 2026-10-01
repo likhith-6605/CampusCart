@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,10 +33,18 @@ function Login() {
         JSON.stringify(response.data.user)
       );
 
+      localStorage.setItem(
+        "campusToken",
+        response.data.token
+      );
+
       alert(response.data.message);
 
       setEmail("");
       setPassword("");
+
+      // Open CampusCart home page after successful login
+      navigate("/");
     } catch (error) {
       alert(
         error.response?.data?.message ||
@@ -88,12 +98,13 @@ function Login() {
           className="form-button"
           disabled={loading}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading
+            ? "Logging in..."
+            : "Login"}
         </button>
 
         <p className="form-footer">
           Don't have an account?
-
           <Link to="/register">
             {" "}
             Register

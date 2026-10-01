@@ -50,7 +50,7 @@ function CampusEssentials() {
     <div className="page-container campus-page">
       <div className="page-heading">
         <p className="section-tag">
-          UNIQUE CAMPUSCART FEATURE
+          CAMPUS ESSENTIALS
         </p>
 
         <h1>Campus Essentials Mode 🎓</h1>
@@ -67,9 +67,7 @@ function CampusEssentials() {
           onClick={() => setSelectedMode("Exam")}
         >
           📚
-
           <strong>Exam Preparation</strong>
-
           <span>Study essentials</span>
         </button>
 
@@ -78,9 +76,7 @@ function CampusEssentials() {
           onClick={() => setSelectedMode("Hostel")}
         >
           🏠
-
           <strong>Hostel Essentials</strong>
-
           <span>Daily hostel needs</span>
         </button>
 
@@ -89,9 +85,7 @@ function CampusEssentials() {
           onClick={() => setSelectedMode("Coding")}
         >
           💻
-
           <strong>Coding & Lab</strong>
-
           <span>Lab essentials</span>
         </button>
 
@@ -100,9 +94,7 @@ function CampusEssentials() {
           onClick={() => setSelectedMode("Daily")}
         >
           🎓
-
           <strong>Daily College</strong>
-
           <span>Everyday essentials</span>
         </button>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 function Checkout() {
   const [name, setName] = useState("");
@@ -6,8 +7,9 @@ function Checkout() {
   const [address, setAddress] = useState("");
   const [payment, setPayment] =
     useState("Cash on Delivery");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!name || !phone || !address) {
@@ -25,39 +27,50 @@ function Checkout() {
       return;
     }
 
-    const existingOrders =
-      JSON.parse(
-        localStorage.getItem("campusOrders")
-      ) || [];
-
-    const newOrder = {
-      id: Date.now(),
-      customerName: name,
-      phone,
-      address,
-      payment,
-      products: cart,
-      total: cart.reduce(
-        (sum, product) => sum + product.price,
-        0
-      ),
-      date: new Date().toLocaleString(),
-    };
-
-    existingOrders.push(newOrder);
-
-    localStorage.setItem(
-      "campusOrders",
-      JSON.stringify(existingOrders)
+    const total = cart.reduce(
+      (sum, product) => sum + product.price,
+      0
     );
 
-    localStorage.removeItem("campusCart");
+    const storedUser =
+      JSON.parse(
+        localStorage.getItem("campusUser")
+      ) || null;
 
-    alert("Order placed successfully!");
+    try {
+      setLoading(true);
 
-    setName("");
-    setPhone("");
-    setAddress("");
+      const response = await axios.post(
+        "http://localhost:5000/api/orders",
+        {
+          customerName: name,
+          phone,
+          address,
+          payment,
+          products: cart,
+          total,
+          userEmail: storedUser?.email || null,
+        }
+      );
+
+      alert(response.data.message);
+
+      localStorage.removeItem("campusCart");
+
+      setName("");
+      setPhone("");
+      setAddress("");
+      setPayment("Cash on Delivery");
+    } catch (error) {
+      console.error("Order error:", error);
+
+      alert(
+        error.response?.data?.message ||
+          "Unable to place order. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -118,8 +131,11 @@ function Checkout() {
         <button
           type="submit"
           className="form-button"
+          disabled={loading}
         >
-          Place Order
+          {loading
+            ? "Placing Order..."
+            : "Place Order"}
         </button>
       </form>
     </div>

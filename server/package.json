@@ -1,12 +1,18 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "CampusCart E-Commerce Backend",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
-  "keywords": [],
+  "keywords": [
+    "campuscart",
+    "ecommerce",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

@@ -1,14 +1,14 @@
-# 🛒 CampusCart – Student E-Commerce Platform
+# CampusCart – Student E-Commerce Platform
 
 CampusCart is a full-stack e-commerce web application designed for college students. It allows users to browse campus-friendly products, search and filter products, manage a shopping cart, save wishlist items, create an account, log in, checkout, and view orders.
 
-## 📌 Problem Statement
+## Problem Statement
 
 College students often need products such as bags, stationery, clothing, and accessories, but finding useful products in one simple platform can be inconvenient.
 
 CampusCart provides a simple student-focused shopping platform where users can browse products, search for products, manage their cart, save wishlist items, and place orders.
 
-## 🎯 Objectives
+## Objectives
 
 - Build a responsive e-commerce application using React.js.
 - Create reusable React components.
@@ -21,7 +21,7 @@ CampusCart provides a simple student-focused shopping platform where users can b
 - Implement wishlist functionality.
 - Demonstrate both Functional and Class Components.
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 ### Frontend
 
@@ -47,23 +47,23 @@ CampusCart provides a simple student-focused shopping platform where users can b
 - GitHub
 - PowerShell
 
-## ✨ Main Features
+## Main Features
 
-- 🏠 Home page
-- 🛍️ Product listing
-- 🔎 Product search
-- 🏷️ Category filtering
-- 📦 Product details
-- 🛒 Shopping cart
-- ❤️ Wishlist
-- 👤 User registration
-- 🔐 User login
-- 💳 Checkout
-- 📋 Order history
-- 📱 Responsive design
-- 🔌 Express REST API
+-  Home page
+-  Product listing
+-  Product search
+-  Category filtering
+-  Product details
+-  Shopping cart
+-  Wishlist
+-  User registration
+-  User login
+-  Checkout
+-  Order history
+-  Responsive design
+-  Express REST API
 
-## ⭐ Independent Modifications
+##  Independent Modifications
 
 The project was developed based on the selected e-commerce tutorial and independently modified with additional functionality.
 
@@ -84,7 +84,7 @@ Users can save products to a wishlist using the wishlist button and view their s
 
 A separate `AboutProject` page was implemented using a React Class Component to demonstrate the use of both modern Functional Components and Class Components.
 
-## 🧩 React Concepts Demonstrated
+##  React Concepts Demonstrated
 
 ### Components
 
